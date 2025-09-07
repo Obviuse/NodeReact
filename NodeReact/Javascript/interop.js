@@ -52,7 +52,7 @@ const renderComponent = (callback, componentId, options, props) => {
         bootstrapScriptContent = options.bootstrapScriptContent;
       }
 
-      const { pipe } = ReactDOMServer.renderToReadableStream(
+      const { pipe } = ReactDOMServer.renderToPipeableStream(
         React.createElement(
           component,
           Object.assign(props, {

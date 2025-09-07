@@ -3,7 +3,7 @@
   "name": "NodeReact",
   "private": true,
   "scripts": {
-    "build": "echo ------ Yarn Install ------ && yarn install && echo ------ Webpack Compile ------ && webpack",
+    "build": "echo ------ Webpack Compile ------ && webpack",
     "watch": "webpack --watch"
   },
   "dependencies": {

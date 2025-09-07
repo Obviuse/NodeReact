@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -270,6 +270,20 @@ namespace NodeReact.Components
                 }
                 writer.Write("))");
             }
+        }
+
+        public void RenderHydrationObject(TextWriter writer)
+        {
+            writer.Write("['");
+
+            writer.Write(ContainerId);
+            writer.Write("','");
+            writer.Write(ComponentName);
+            writer.Write("',");
+
+            WriterSerialziedProps(writer);
+
+            writer.Write("]");
         }
 
         public virtual void Dispose()

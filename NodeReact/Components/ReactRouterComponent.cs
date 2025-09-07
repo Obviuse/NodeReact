@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using NodeReact.AspNetCore.ViewEngine;
@@ -31,21 +31,30 @@ namespace NodeReact.Components
 
             try
             {
-                var routingContext = await Render(new RenderOptions
+                // Performing a couple of retries e.g. if the server side bundle is in the process of beeing built.
+
+                var context = await RetryAsync.Do<RoutingContext>(async () =>
                 {
-                    Location = Location,
-                    DisableStreaming = true,
-                    DisableBootstrapPropsInPlace = true,
-                    BootstrapScriptContent = null,
-                    ComponentName = ComponentName,
-                    ServerOnly = ServerOnly,
-                    Nonce = NonceProvider?.Invoke(),
-                });
+                    var routingContext = await Render(new RenderOptions
+                    {
+                        Location = Location,
+                        DisableStreaming = true,
+                        DisableBootstrapPropsInPlace = true,
+                        BootstrapScriptContent = null,
+                        ComponentName = ComponentName,
+                        ServerOnly = ServerOnly,
+                        Nonce = NonceProvider?.Invoke(),
+                    });
 
-                OutputHtml = new PooledStream();
-                await routingContext.CopyToStream(OutputHtml.Stream);
+                    OutputHtml = new PooledStream();
+                    await routingContext.CopyToStream(OutputHtml.Stream);
 
-                return routingContext;
+                    return routingContext;
+
+                },TimeSpan.FromMilliseconds(500),8);
+
+                return context;
+
             }
             catch (Exception ex)
             {

@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using NodeReact.Components;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 
 namespace NodeReact
 {
@@ -11,6 +12,8 @@ namespace NodeReact
         T CreateComponent<T>(string componentName) where T: ReactBaseComponent;
 
         void GetInitJavaScript(TextWriter writer);
+
+        void GetHydrationObjectJavaScript(TextWriter writer);
     }
 
     public sealed class ReactScopedContext : IReactScopedContext
@@ -33,6 +36,28 @@ namespace NodeReact
             _components.Add(component);
 
             return component;
+        }
+
+        public void GetHydrationObjectJavaScript(TextWriter writer)
+        {
+            //writer.Write("<script>");
+            writer.Write("var hydrateWith = [");
+
+
+            foreach (var component in _components)
+            {
+                if (!component.ServerOnly)
+                {
+                    component.RenderHydrationObject(writer);
+
+                    if (component != _components.Last())
+                    {
+                        writer.Write(",");
+                    }
+                }
+            }
+
+            writer.Write("];");
         }
 
         public void GetInitJavaScript(TextWriter writer)

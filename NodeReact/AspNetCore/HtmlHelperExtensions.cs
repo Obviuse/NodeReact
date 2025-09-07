@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -53,9 +53,25 @@ namespace NodeReact.AspNetCore
             }
 
             reactComponent.Location = path;
-            
-            var executionResult = await reactComponent.RenderRouterWithContext();
-            
+
+            RoutingContext? executionResult = null;
+
+            try
+            {
+                executionResult = await reactComponent.RenderRouterWithContext();
+            }
+            catch (Exception ex)
+            {
+                return new HtmlString($"""
+                                      <details style="background: #d12727; padding: 1rem; color: #fff; border-radius:.3rem; word-wrap: break-word;">
+                                        <summary>Rendering issue</summary>
+                                        <p>
+                                        {ex.ToString()}
+                                        </p>
+                                      </details>
+                                      """);
+            }
+
             if (executionResult?.StatusCode != null || executionResult?.Url != null)
             {
                 // Use provided contextHandler

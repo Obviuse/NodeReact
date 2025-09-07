@@ -1,4 +1,4 @@
-﻿const filewatcher = require("filewatcher");
+const filewatcher = require("filewatcher");
 
 const requireFiles = process.env.NODEREACT_REQUIREFILES.split(",").map((t) =>
   t.replace(/\\/g, "/")
@@ -52,7 +52,7 @@ const renderComponent = (callback, componentId, options, props) => {
         bootstrapScriptContent = options.bootstrapScriptContent;
       }
 
-      const { pipe } = ReactDOMServer.renderToPipeableStream(
+      const { pipe } = ReactDOMServer.renderToReadableStream(
         React.createElement(
           component,
           Object.assign(props, {

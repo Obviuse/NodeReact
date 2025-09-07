@@ -15,13 +15,17 @@ internal class PooledStream : IDisposable
         var largeBufferMultiple = 1024 * 1024;
         var maximumBufferSize = 128 * 1024 * 1024;
         
-        _manager = new RecyclableMemoryStreamManager(blockSize, largeBufferMultiple, maximumBufferSize)
+        _manager = new RecyclableMemoryStreamManager(
+            new RecyclableMemoryStreamManager.Options(
+                blockSize,
+                largeBufferMultiple,
+                maximumBufferSize,
+                largeBufferMultiple * 4,
+                250 * blockSize)
         {
             GenerateCallStacks = true,
             AggressiveBufferReturn = true,
-            MaximumFreeLargePoolBytes = largeBufferMultiple * 4,
-            MaximumFreeSmallPoolBytes = 250 * blockSize
-        };
+        });
     }
 
     public PooledStream()

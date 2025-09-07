@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+        <TargetFramework>net8.0</TargetFramework>
 
         <Description>Library to render React library components on the server-side with C# as well as on the client.</Description>
         <PackageTags>react, reactjs, nodejs</PackageTags>
         <Authors>Daniil Sokolyuk</Authors>
 
-        <VersionPrefix>2.0.0</VersionPrefix>
+        
 
         <PackageProjectUrl>https://github.com/DaniilSokolyuk/NodeReact.NET</PackageProjectUrl>
         <RepositoryUrl>https://github.com/DaniilSokolyuk/NodeReact.NET</RepositoryUrl>
@@ -20,14 +20,20 @@
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
 
-        <PackageReference Include="Jering.Javascript.NodeJS" Version="7.0.0-beta.3" />
+        <PackageReference Include="Jering.Javascript.NodeJS" Version="7.0.0" />
 
-        <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.1" />
+        <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="Node.js.redist.win" Version="22.13.1" />
 
-        <PackageReference Include="Yarn.MSBuild" Version="1.22.19" PrivateAssets="all" ExcludeAssets="Runtime">
+        <Content Include="$(PkgNode_js_redist_win)\tools\x64\node.exe"
+                Link="Node\node.exe"
+                CopyToOutputDirectory="PreserveNewest"
+                CopyToPublishDirectory="PreserveNewest" />
+
+        <!--<PackageReference Include="Yarn.MSBuild" PrivateAssets="all" ExcludeAssets="Runtime">
             <IncludeAssets>compile; build; native; contentfiles; analyzers</IncludeAssets>
-        </PackageReference>
+        </PackageReference>-->
     </ItemGroup>
 
     <PropertyGroup>
@@ -37,15 +43,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <JavascriptInputs Include="Javascript\**" Exclude="$(DefaultItemExcludes)" />
-        <JavascriptOutputs Include="Javascript\bin\$(Configuration)\$(BundleName)" />
-        <!-- If any file in JavascriptInputs has changed, fast up-to-date check must indicate that a rebuild is required - https://github.com/dotnet/project-system/pull/2241 -->
-        <UpToDateCheckInput Include="@(JavascriptInputs)" />
+        <JavascriptOutputs Include="Javascript\$(BundleName)" />
         <EmbeddedResource Include="@(JavascriptOutputs)" LogicalName="$(BundleName)" />
     </ItemGroup>
 
     <Target Name="JavascriptBuild" BeforeTargets="DispatchToInnerBuilds;PreBuildEvent" Inputs="@(JavascriptInputs)" Outputs="@(JavascriptOutputs)">
-        <Yarn WorkingDirectory=".\Javascript" Command="run build --env mode=$(Configuration) --env entry=$(BundleName)" />
+        
     </Target>
 
 </Project>
